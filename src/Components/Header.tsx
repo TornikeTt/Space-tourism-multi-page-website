@@ -1,9 +1,35 @@
+import { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 
 import logo from "../assets/shared/logo.svg";
-import humburger from "../assets/shared/icon-hamburger.svg";
+import hamburger from "../assets/shared/icon-hamburger.svg";
 
 export default function Header() {
+    const menuItems = ["HOME", "DESTINATION", "CREW", "TECHNOLOGY"];
+    const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
+    const [activeIndex, setActiveIndex] = useState(0);
+    const itemsRef = useRef<(HTMLLIElement | null)[]>([]);
+
+    useEffect(() => {
+        const updatePosition = () => {
+            const item = itemsRef.current[activeIndex];
+
+            if (item && item.offsetParent) {
+                const parentRect = item.offsetParent.getBoundingClientRect();
+                const itemRect = item.getBoundingClientRect();
+
+                setUnderlineStyle({
+                    left: itemRect.left - parentRect.left,
+                    width: itemRect.width,
+                });
+            }
+        };
+
+        updatePosition();
+        window.addEventListener("resize", updatePosition);
+        return () => window.removeEventListener("resize", updatePosition);
+    }, [activeIndex]);
+
     return (
         <header
             className={clsx(
@@ -16,31 +42,44 @@ export default function Header() {
             )}
         >
             <img src={logo} alt="Logo" />
-            <img src={humburger} alt="Menu" className="md:hidden" />
+            <img src={hamburger} alt="Menu" className="md:hidden" />
 
             <nav
                 className={clsx(
                     // base
-                    "hidden h-full flex-1 bg-white/5 pr-10",
-                    //md
-                    "md:block md:max-w-160",
-                    //lg
-                    "lg:max-w-184",
+                    "hidden h-full bg-white/5 pr-10",
+                    // md
+                    "md:block md:w-160",
+                    // lg
+                    "lg:w-184",
                 )}
             >
-                <ul className="font-bellefair-condensed flex h-full items-center justify-end gap-12 text-white">
-                    <li>HOME</li>
-                    <li>
-                        <span className="pr-3 font-bold">01</span>
-                        DESTINATION
-                    </li>
-                    <li>
-                        <span className="pr-3 font-bold">02</span>CREW
-                    </li>
-                    <li>
-                        <span className="pr-3 font-bold">03</span>TECHNOLOGY
-                    </li>
-                </ul>
+                <div className="relative flex h-full items-center justify-end">
+                    <ul className="font-bellefair-condensed flex h-full items-center gap-12 text-white">
+                        {menuItems.map((each, index) => {
+                            return (
+                                <li
+                                    key={index}
+                                    ref={(el) => {
+                                        itemsRef.current[index] = el;
+                                    }}
+                                    onClick={() => setActiveIndex(index)}
+                                    className="cursor-pointer font-bold"
+                                >
+                                    <span className="pr-3">0{index}</span>
+                                    {each}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                    <div
+                        style={{
+                            left: `${underlineStyle.left}px`,
+                            width: `${underlineStyle.width}px`,
+                        }}
+                        className="absolute bottom-0 h-1 bg-white transition-all"
+                    ></div>
+                </div>
             </nav>
         </header>
     );
