@@ -1,14 +1,18 @@
 import { useState, useEffect, useRef } from "react";
+import { Link, useLocation } from "react-router";
 import clsx from "clsx";
-
 import logo from "../assets/shared/logo.svg";
 import hamburger from "../assets/shared/icon-hamburger.svg";
 
 export default function Header() {
     const menuItems = ["HOME", "DESTINATION", "CREW", "TECHNOLOGY"];
     const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
-    const [activeIndex, setActiveIndex] = useState(0);
     const itemsRef = useRef<(HTMLLIElement | null)[]>([]);
+    const location = useLocation();
+    const activeIndex = menuItems.findIndex((item, index) => {
+        if (index === 0) return location.pathname === "/";
+        return location.pathname.startsWith(`/${item.toLowerCase()}`);
+    });
 
     useEffect(() => {
         const updatePosition = () => {
@@ -41,15 +45,26 @@ export default function Header() {
                 "lg:mt-10",
             )}
         >
-            <img src={logo} alt="Logo" />
+            <Link to="/">
+                <img src={logo} alt="Logo" />
+            </Link>
             <img src={hamburger} alt="Menu" className="md:hidden" />
+
+            <div
+                className={clsx(
+                    //base
+                    "relative z-20 -mr-8 hidden h-px flex-1 bg-white/25 lg:ml-16",
+                    //lg
+                    "lg:block",
+                )}
+            ></div>
 
             <nav
                 className={clsx(
                     // base
-                    "hidden h-full bg-white/5 pr-10",
+                    "hidden h-full bg-white/5 pr-10 backdrop-blur-md",
                     // md
-                    "md:block md:w-160",
+                    "md:block md:w-165",
                     // lg
                     "lg:w-184",
                 )}
@@ -58,17 +73,26 @@ export default function Header() {
                     <ul className="font-bellefair-condensed flex h-full items-center gap-12 text-white">
                         {menuItems.map((each, index) => {
                             return (
-                                <li
-                                    key={index}
-                                    ref={(el) => {
-                                        itemsRef.current[index] = el;
-                                    }}
-                                    onClick={() => setActiveIndex(index)}
-                                    className="cursor-pointer font-bold"
+                                <Link
+                                    key={each}
+                                    to={
+                                        index == 0
+                                            ? "/"
+                                            : `/${each.toLowerCase()}`
+                                    }
                                 >
-                                    <span className="pr-3">0{index}</span>
-                                    {each}
-                                </li>
+                                    <li
+                                        ref={(el) => {
+                                            itemsRef.current[index] = el;
+                                        }}
+                                        className="cursor-pointer"
+                                    >
+                                        <span className="pr-3 font-bold">
+                                            0{index}
+                                        </span>
+                                        {each}
+                                    </li>
+                                </Link>
                             );
                         })}
                     </ul>
