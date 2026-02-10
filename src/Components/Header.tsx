@@ -3,12 +3,14 @@ import { Link, useLocation } from "react-router";
 import clsx from "clsx";
 import logo from "../assets/shared/logo.svg";
 import hamburger from "../assets/shared/icon-hamburger.svg";
+import Sidebar from "./Sidebar";
 
 export default function Header() {
     const menuItems = ["HOME", "DESTINATION", "CREW", "TECHNOLOGY"];
     const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
     const itemsRef = useRef<(HTMLLIElement | null)[]>([]);
     const location = useLocation();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const activeIndex = menuItems.findIndex((item, index) => {
         if (index === 0) return location.pathname === "/";
         return location.pathname.startsWith(`/${item.toLowerCase()}`);
@@ -48,7 +50,9 @@ export default function Header() {
             <Link to="/">
                 <img src={logo} alt="Logo" />
             </Link>
-            <img src={hamburger} alt="Menu" className="md:hidden" />
+            <button className="md:hidden" onClick={() => setIsMenuOpen(true)}>
+                <img src={hamburger} alt="Menu" />
+            </button>
 
             <div
                 className={clsx(
@@ -105,6 +109,13 @@ export default function Header() {
                     ></div>
                 </div>
             </nav>
+
+            <Sidebar
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                menuItems={menuItems}
+                activeIndex={activeIndex}
+            />
         </header>
     );
 }
