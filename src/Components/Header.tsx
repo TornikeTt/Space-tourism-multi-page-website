@@ -40,14 +40,12 @@ export default function Header() {
         <header
             className={clsx(
                 // base
-                "flex h-22 items-center justify-between px-6",
-                // md
-                "md:pr-0",
+                "flex h-22 items-center justify-between",
                 //lg
                 "lg:mt-10",
             )}
         >
-            <Link to="/">
+            <Link to="/" className="md:pl-6">
                 <img src={logo} alt="Logo" />
             </Link>
             <button className="md:hidden" onClick={() => setIsMenuOpen(true)}>

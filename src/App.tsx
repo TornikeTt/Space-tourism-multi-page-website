@@ -14,7 +14,7 @@ import Layout from "./Components/Layout";
 import Home from "./pages/Home";
 import Destination from "./pages/Destination";
 import Crew from "./pages/Crew";
-import Technology from "./pages/technology";
+import Technology from "./pages/Technology";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
